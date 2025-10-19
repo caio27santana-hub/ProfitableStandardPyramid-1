@@ -16,8 +16,7 @@ app.use(express.static(__dirname));
 const API_KEY = process.env.GEMINI_API_KEY;
 if (!API_KEY) console.warn("⚠️ AVISO: GEMINI_API_KEY não configurada.");
 
-const GEMINI_URL =
-  `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${API_KEY}`;
+const GEMINI_URL = `https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash-lite:generateContent?key=${API_KEY}`;
 
 // Função auxiliar para chamar a API Gemini
 async function chamarGemini(mensagem) {
@@ -32,9 +31,9 @@ Usuário: ${mensagem}`;
       contents: [{ role: "user", parts: [{ text: prompt }] }],
       generationConfig: {
         maxOutputTokens: 256,
-        temperature: 0.7
-      }
-    })
+        temperature: 0.7,
+      },
+    }),
   });
 
   if (!resposta.ok) {
@@ -43,7 +42,9 @@ Usuário: ${mensagem}`;
   }
 
   const data = await resposta.json();
-  return data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ A IA não respondeu.";
+  return (
+    data.candidates?.[0]?.content?.parts?.[0]?.text || "⚠️ A IA não respondeu."
+  );
 }
 
 // Rota do chat
