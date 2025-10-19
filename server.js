@@ -54,7 +54,8 @@ app.post("/chat", async (req, res) => {
 
   try {
     const respostaIA = await chamarGemini(message);
-    res.json({ reply: respostaIA });
+    // NOVA LINHA (A CORRETA):
+    res.json({ success: true, reply: respostaDaIA });
   } catch (err) {
     console.error("Erro no /chat:", err);
     res.status(500).json({ error: "Erro no servidor: " + err.message });

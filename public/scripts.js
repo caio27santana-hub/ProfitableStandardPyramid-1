@@ -202,7 +202,6 @@ document.addEventListener("DOMContentLoaded", () => {
 
         try {
           const res = await fetch("/chat", {
-            // <-- Garantir que está assim!
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ message: texto }),
@@ -352,7 +351,7 @@ document.addEventListener("DOMContentLoaded", () => {
 //QUESTIONARIO
 
 const MAX_QUESTIONS = 3;
-const BACKEND_BASE_URL = 'http://localhost:3000';
+const BACKEND_BASE_URL = "http://localhost:3000";
 // A URL para obter a pergunta (agora acedida via GET)
 const GET_QUESTION_URL = `${BACKEND_BASE_URL}/api/get-question`;
 // A URL para criar o perfil (continua a ser POST pois envia dados)
@@ -360,13 +359,15 @@ const CREATE_PROFILE_URL = `${BACKEND_BASE_URL}/api/create-profile`;
 
 // --- ELEMENTOS DA PÁGINA ---
 let loadingDiv, questionDiv, profileDiv, errorDiv;
-let questionTextElement, optionsContainer, profileTextElement, errorMessageElement;
-
+let questionTextElement,
+  optionsContainer,
+  profileTextElement,
+  errorMessageElement;
 
 // --- ESTADO DA APLICAÇÃO ---
 let questionCount = 0;
 let userAnswers = [];
-let currentQuestion = '';
+let currentQuestion = "";
 
 // --- FUNÇÕES PRINCIPAIS ---
 
@@ -375,16 +376,16 @@ let currentQuestion = '';
  * @param {string} state - O estado a ser mostrado ('loading', 'question', 'profile', 'error').
  */
 function showUIState(state) {
-    if (!loadingDiv) return;
-    loadingDiv.classList.add('hidden');
-    questionDiv.classList.add('hidden');
-    profileDiv.classList.add('hidden');
-    errorDiv.classList.add('hidden');
+  if (!loadingDiv) return;
+  loadingDiv.classList.add("hidden");
+  questionDiv.classList.add("hidden");
+  profileDiv.classList.add("hidden");
+  errorDiv.classList.add("hidden");
 
-    if (state === 'loading') loadingDiv.classList.remove('hidden');
-    if (state === 'question') questionDiv.classList.remove('hidden');
-    if (state === 'profile') profileDiv.classList.remove('hidden');
-    if (state === 'error') errorDiv.classList.remove('hidden');
+  if (state === "loading") loadingDiv.classList.remove("hidden");
+  if (state === "question") questionDiv.classList.remove("hidden");
+  if (state === "profile") profileDiv.classList.remove("hidden");
+  if (state === "error") errorDiv.classList.remove("hidden");
 }
 
 /**
@@ -395,46 +396,49 @@ function showUIState(state) {
  * @returns {Promise<any>} - Os dados da resposta em JSON.
  */
 async function fetchWithExponentialBackoff(url, options, retries = 5) {
-    const wait = (ms) => new Promise(resolve => setTimeout(resolve, ms));
+  const wait = (ms) => new Promise((resolve) => setTimeout(resolve, ms));
 
-    for (let i = 0; i < retries; i++) {
-        try {
-            const response = await fetch(url, options);
-            if (!response.ok) {
-                throw new Error(`HTTP error! status: ${response.status}`);
-            }
-            return await response.json();
-        } catch (error) {
-            const delay = Math.pow(2, i) * 100;
-            console.warn(`Tentativa ${i + 1} falhou: ${error.message}. Tentando novamente em ${delay}ms...`);
-            if (i === retries - 1) {
-                console.error(`Erro final após ${retries} tentativas:`, error);
-                throw error;
-            }
-            await wait(delay);
-        }
+  for (let i = 0; i < retries; i++) {
+    try {
+      const response = await fetch(url, options);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      return await response.json();
+    } catch (error) {
+      const delay = Math.pow(2, i) * 100;
+      console.warn(
+        `Tentativa ${i + 1} falhou: ${
+          error.message
+        }. Tentando novamente em ${delay}ms...`
+      );
+      if (i === retries - 1) {
+        console.error(`Erro final após ${retries} tentativas:`, error);
+        throw error;
+      }
+      await wait(delay);
     }
+  }
 }
 
 /**
  * Busca a próxima pergunta do backend utilizando o método GET.
  */
 async function fetchQuestion() {
-    showUIState('loading');
-    try {
-        // ALTERAÇÃO PRINCIPAL: A chamada agora é um GET.
-        // O método 'GET' é o padrão, então não precisamos de especificar { method: 'GET' }.
-        const data = await fetchWithExponentialBackoff(GET_QUESTION_URL);
+  showUIState("loading");
+  try {
+    // ALTERAÇÃO PRINCIPAL: A chamada agora é um GET.
+    // O método 'GET' é o padrão, então não precisamos de especificar { method: 'GET' }.
+    const data = await fetchWithExponentialBackoff(GET_QUESTION_URL);
 
-        currentQuestion = data.pergunta;
-        displayQuestion(data.pergunta, data.opcoes);
-        showUIState('question');
-
-    } catch (error) {
-        console.error('Erro ao buscar pergunta do backend:', error);
-        errorMessageElement.textContent = `Não foi possível carregar a pergunta. Verifique se o servidor (server.js) está a ser executado e tente novamente. (Erro: ${error.message})`;
-        showUIState('error');
-    }
+    currentQuestion = data.pergunta;
+    displayQuestion(data.pergunta, data.opcoes);
+    showUIState("question");
+  } catch (error) {
+    console.error("Erro ao buscar pergunta do backend:", error);
+    errorMessageElement.textContent = `Não foi possível carregar a pergunta. Verifique se o servidor (server.js) está a ser executado e tente novamente. (Erro: ${error.message})`;
+    showUIState("error");
+  }
 }
 
 /**
@@ -443,15 +447,15 @@ async function fetchQuestion() {
  * @param {string[]} options - Um array com as opções de resposta.
  */
 function displayQuestion(question, options) {
-    questionTextElement.textContent = question;
-    optionsContainer.innerHTML = '';
-    options.forEach(option => {
-        const button = document.createElement('button');
-        button.textContent = option;
-        button.className = 'option-button';
-        button.onclick = () => handleOptionClick(option);
-        optionsContainer.appendChild(button);
-    });
+  questionTextElement.textContent = question;
+  optionsContainer.innerHTML = "";
+  options.forEach((option) => {
+    const button = document.createElement("button");
+    button.textContent = option;
+    button.className = "option-button";
+    button.onclick = () => handleOptionClick(option);
+    optionsContainer.appendChild(button);
+  });
 }
 
 /**
@@ -459,54 +463,55 @@ function displayQuestion(question, options) {
  * @param {string} answer - A resposta selecionada pelo usuário.
  */
 function handleOptionClick(answer) {
-    userAnswers.push({ question: currentQuestion, answer: answer });
-    questionCount++;
+  userAnswers.push({ question: currentQuestion, answer: answer });
+  questionCount++;
 
-    if (questionCount >= MAX_QUESTIONS) {
-        fetchProfile();
-    } else {
-        fetchQuestion();
-    }
+  if (questionCount >= MAX_QUESTIONS) {
+    fetchProfile();
+  } else {
+    fetchQuestion();
+  }
 }
 
 /**
  * Envia as respostas para o backend para gerar o perfil do usuário.
  */
 async function fetchProfile() {
-    showUIState('loading');
-    try {
-        // Este pedido permanece POST porque precisa de enviar os dados das respostas.
-        const data = await fetchWithExponentialBackoff(CREATE_PROFILE_URL, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ answers: userAnswers })
-        });
+  showUIState("loading");
+  try {
+    // Este pedido permanece POST porque precisa de enviar os dados das respostas.
+    const data = await fetchWithExponentialBackoff(CREATE_PROFILE_URL, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ answers: userAnswers }),
+    });
 
-        profileTextElement.textContent = data.profileText;
-        showUIState('profile');
-
-    } catch (error) {
-        console.error('Erro ao criar perfil no backend:', error);
-        errorMessageElement.textContent = `Não foi possível criar o seu perfil. (Erro: ${error.message})`;
-        showUIState('error');
-    }
+    profileTextElement.textContent = data.profileText;
+    showUIState("profile");
+  } catch (error) {
+    console.error("Erro ao criar perfil no backend:", error);
+    errorMessageElement.textContent = `Não foi possível criar o seu perfil. (Erro: ${error.message})`;
+    showUIState("error");
+  }
 }
 
 // --- INICIALIZAÇÃO ---
-document.addEventListener('DOMContentLoaded', () => {
-    loadingDiv = document.getElementById('loading-state');
-    questionDiv = document.getElementById('question-state');
-    profileDiv = document.getElementById('profile-state');
-    errorDiv = document.getElementById('error-state');
-    questionTextElement = document.getElementById('question-text');
-    optionsContainer = document.getElementById('options-container');
-    profileTextElement = document.getElementById('profile-text');
-    errorMessageElement = document.getElementById('error-message');
+document.addEventListener("DOMContentLoaded", () => {
+  loadingDiv = document.getElementById("loading-state");
+  questionDiv = document.getElementById("question-state");
+  profileDiv = document.getElementById("profile-state");
+  errorDiv = document.getElementById("error-state");
+  questionTextElement = document.getElementById("question-text");
+  optionsContainer = document.getElementById("options-container");
+  profileTextElement = document.getElementById("profile-text");
+  errorMessageElement = document.getElementById("error-message");
 
-    if (!loadingDiv || !questionDiv || !profileDiv || !errorDiv) {
-        console.error("Erro Crítico: Um ou mais elementos principais da UI não foram encontrados no HTML. Verifique os IDs.");
-        return;
-    }
+  if (!loadingDiv || !questionDiv || !profileDiv || !errorDiv) {
+    console.error(
+      "Erro Crítico: Um ou mais elementos principais da UI não foram encontrados no HTML. Verifique os IDs."
+    );
+    return;
+  }
 
-    fetchQuestion();
+  fetchQuestion();
 });
